@@ -4,7 +4,10 @@
   "description": "Discord bot for tracking 'caps'",
   "main": "bot.js",
   "type": "module",
+  "sourceType": "module",
   "scripts": {
+    "build": "node deploy-commands.js",
+    "start": "node bot.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Kevin Jung",
