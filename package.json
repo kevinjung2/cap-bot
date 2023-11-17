@@ -4,7 +4,6 @@
   "description": "Discord bot for tracking 'caps'",
   "main": "bot.js",
   "type": "module",
-  "sourceType": "module",
   "scripts": {
     "build": "node deploy-commands.js",
     "start": "node bot.js",
