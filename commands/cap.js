@@ -21,4 +21,5 @@ export async function execute(interaction) {
 	interaction.reply(`Looks like ${capper} capped when they said:\n "${theCap}"`);
 	const message = await interaction.fetchReply();
 	message.react('🧢');
+	return message;
 }
