@@ -12,12 +12,10 @@
   "author": "Kevin Jung",
   "license": "ISC",
   "dependencies": {
-    "@prisma/client": "^5.6.0",
     "discord.js": "^14.14.1",
     "dotenv": "^16.3.1"
   },
   "devDependencies": {
-    "eslint": "^8.53.0",
-    "prisma": "^5.6.0"
+    "eslint": "^8.53.0"
   }
 }
