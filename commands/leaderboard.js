@@ -1,6 +1,5 @@
 import { SlashCommandBuilder, bold } from 'discord.js';
 
-// HANDLE LESS THAN 5 MESSAGES
 async function buildMessageLeaderboard(messages, channel) {
 	const messageLeaderboard = [];
 	for (const message of messages) {
@@ -8,7 +7,17 @@ async function buildMessageLeaderboard(messages, channel) {
 		if (!reactionMessage) continue;
 		messageLeaderboard.push([reactionMessage.message.id, reactionMessage.count]);
 	}
-	const sorted = messageLeaderboard.sort((a, b) => { return b[1] - a[1]; }).slice(0, 5);
+	if (messageLeaderboard.length === 0) return 'This server doesn\'t have any cappers yet!';
+	let sorted = [];
+	if (messageLeaderboard.length === 1) {
+		sorted = [...messageLeaderboard];
+	}
+	else {
+		sorted = messageLeaderboard.sort((a, b) => { return b[1] - a[1]; });
+	}
+	if (sorted.length > 5) {
+		sorted = sorted.slice(0, 5);
+	}
 	const sortedMessages = [];
 	for (const m of sorted) {
 		const mess = await channel.messages.fetch({ message: m[0] });
@@ -18,13 +27,17 @@ async function buildMessageLeaderboard(messages, channel) {
 }
 
 const writeMessageLeaderboard = array => {
+	if (array.length === 1) return `The only Cap here is: \n${array[0][0].content}    ${array[0][1]}x🧢`;
 	let messageString = '';
 	messageString += bold('🧢\n----------Biggest Caps----------\n---------------------------------\n');
 	messageString += `\n 1. ${array[0][0].content}     ${array[0][1]}x🧢\n
-	2. ${array[1][0].content}     ${array[1][1]}x🧢\n
-	3. ${array[2][0].content}     ${array[2][1]}x🧢\n
-	4. ${array[3][0].content}     ${array[3][1]}x🧢\n
-	5. ${array[4][0].content}     ${array[4][1]}x🧢\n`;
+	2. ${array[1][0].content}     ${array[1][1]}x🧢\n`;
+	if (array.length < 3) return messageString;
+	messageString += `\n 3. ${array[2][0].content}     ${array[2][1]}x🧢\n`;
+	if (array.length < 4) return messageString;
+	messageString += `\n 4. ${array[3][0].content}     ${array[3][1]}x🧢\n`;
+	if (array.length < 5) return messageString;
+	messageString += `\n 5. ${array[4][0].content}     ${array[4][1]}x🧢\n`;
 	return messageString;
 };
 
@@ -44,11 +57,9 @@ async function buildUserLeaderboard(messages) {
 			userLeaderboard[user.id] = [count, user];
 		}
 	}
-	console.log(userLeaderboard);
 	for (const key of Object.keys(userLeaderboard)) {
 		lbArray.push(userLeaderboard[key]);
 	}
-	console.log(lbArray);
 	if (lbArray.length === 0) {
 		return 'This server doesnt have any cappers yet!';
 	}
@@ -62,19 +73,17 @@ async function buildUserLeaderboard(messages) {
 	return writeUserLeaderboard(sorted);
 }
 
-// HANDLE BETWEEN 2-4 CAPPERS
 const writeUserLeaderboard = array => {
-	console.log(array);
 	let messageString = '';
 	messageString += bold('🧢\n--------Biggest Cappers--------\n---------------------------------\n');
 	messageString += `\n 1. ${array[0][1]}     ${array[0][0]}x🧢\n
 	2. ${array[1][1]}     ${array[1][0]}x🧢\n`;
 	if (array.length < 3) return messageString;
-	messageString += `3. ${array[2][1]}     ${array[2][0]}x🧢\n`;
+	messageString += `\n 3. ${array[2][1]}     ${array[2][0]}x🧢\n`;
 	if (array.length < 4) return messageString;
-	messageString += `4. ${array[3][1]}     ${array[3][0]}x🧢\n`;
+	messageString += `\n 4. ${array[3][1]}     ${array[3][0]}x🧢\n`;
 	if (array.length < 5) return messageString;
-	messageString += `5. ${array[4][1]}     ${array[4][0]}x🧢\n`;
+	messageString += `\n 5. ${array[4][1]}     ${array[4][0]}x🧢\n`;
 	return messageString;
 };
 
