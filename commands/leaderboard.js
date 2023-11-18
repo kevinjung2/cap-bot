@@ -1,6 +1,6 @@
 import { SlashCommandBuilder, bold } from 'discord.js';
 
-//HANDLE LESS THAN 5 MESSAGES
+// HANDLE LESS THAN 5 MESSAGES
 async function buildMessageLeaderboard(messages, channel) {
 	const messageLeaderboard = [];
 	for (const message of messages) {
@@ -34,9 +34,8 @@ async function buildUserLeaderboard(messages) {
 	for (const message of messages) {
 		const reactionMessage = message[1].reactions.resolve('🧢');
 		if (!reactionMessage) continue;
-		//NEED TO HANDLE IF THERE ARE NO MENTIONS ON THE MESSAGE, IE SOMEONE PUTS CAPHAT NOT A NON /CAP MESSAGE
-		const user = reactionMessage.message.mentions.users.map(user => user)[0];
-		console.log(reactionMessage)
+		// NEED TO HANDLE IF THERE ARE NO MENTIONS ON THE MESSAGE, IE SOMEONE PUTS CAPHAT NOT A NON /CAP MESSAGE
+		const user = reactionMessage.message.mentions.users.map(i => i)[0];
 		const count = parseInt(reactionMessage.count);
 		if (userLeaderboard[user.id]) {
 			userLeaderboard[user.id][0] += count;
@@ -51,25 +50,31 @@ async function buildUserLeaderboard(messages) {
 	}
 	console.log(lbArray);
 	if (lbArray.length === 0) {
-		return 'This server doesnt have any cappers yet!'
+		return 'This server doesnt have any cappers yet!';
 	}
 	if (lbArray.length === 1) {
-		return `The only Capper here is ${lbArray[0][1]} with ${lbArray[0][0]}x🧢`
+		return `The only Capper here is ${lbArray[0][1]} with ${lbArray[0][0]}x🧢`;
 	}
-	return '';
-	const sorted = lbArray.sort((a, b) => { return b[0] - a[0]; }).slice(0, 5);
+	const sorted = lbArray.sort((a, b) => { return b[0] - a[0]; });
+	if (sorted.length >= 5) {
+		return writeUserLeaderboard(sorted.slice(0, 5));
+	}
 	return writeUserLeaderboard(sorted);
 }
 
 // HANDLE BETWEEN 2-4 CAPPERS
 const writeUserLeaderboard = array => {
+	console.log(array);
 	let messageString = '';
 	messageString += bold('🧢\n--------Biggest Cappers--------\n---------------------------------\n');
-	messageString += `\n 1. ${array[0][0]}     ${array[0][1]}x🧢\n
-	2. ${array[1][0]}     ${array[1][1]}x🧢\n
-	3. ${array[2][0]}     ${array[2][1]}x🧢\n
-	4. ${array[3][0]}     ${array[3][1]}x🧢\n
-	5. ${array[4][0]}     ${array[4][1]}x🧢\n`;
+	messageString += `\n 1. ${array[0][1]}     ${array[0][0]}x🧢\n
+	2. ${array[1][1]}     ${array[1][0]}x🧢\n`;
+	if (array.length < 3) return messageString;
+	messageString += `3. ${array[2][1]}     ${array[2][0]}x🧢\n`;
+	if (array.length < 4) return messageString;
+	messageString += `4. ${array[3][1]}     ${array[3][0]}x🧢\n`;
+	if (array.length < 5) return messageString;
+	messageString += `5. ${array[4][1]}     ${array[4][0]}x🧢\n`;
 	return messageString;
 };
 
@@ -87,9 +92,9 @@ export const data = new SlashCommandBuilder()
 	});
 
 export async function execute(interaction, channel) {
-	const messages = await channel.messages.fetch({ limit: 30 });
+	// Handle grabbing more than 100 messages
+	const messages = await channel.messages.fetch({ limit: 100 });
 	let reply = '';
-	// const userLeaderboard = {};
 
 	switch (interaction.options.getString('type')) {
 	case 'user':
@@ -102,4 +107,6 @@ export async function execute(interaction, channel) {
 		break;
 	}
 	interaction.reply(reply);
+	const message = await interaction.fetchReply();
+	setTimeout(() => {message.delete();}, 30000);
 }
